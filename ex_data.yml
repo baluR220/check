@@ -1,0 +1,43 @@
+- 
+    datetime: 2022-04-03 12:04:00
+    shop_name: Shop 23
+    shop_addr: Street, 23
+    goods:
+        - 
+            full_name: Bir red car
+            short_name: car
+            price: 28.90
+            quantity: 2
+            cost: 57.80
+        - 
+            full_name: Wheat Bread
+            short_name: bread
+            price: 6.0
+            quantity: 0.5
+            cost: 3.0
+    total: 60.80
+- 
+    datetime: 2022-04-05 16:34:00
+    shop_name: Shop 23
+    shop_addr: Street, 23
+    goods:
+        - 
+            full_name: Bir red car
+            short_name: car
+            price: 28.90
+            quantity: 2
+            cost: 57.80
+        - 
+            full_name: Wheat Bread
+            short_name: bread
+            price: 6.0
+            quantity: 0.5
+            cost: 3.0
+        - 
+            full_name: Apple juice
+            short_name: juice
+            price: 6.0
+            quantity: 0.5
+            cost: 3.0
+    total: 63.80
+
