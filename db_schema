@@ -1,7 +1,7 @@
 ------------------------
 shops                  |
 ------------------------
-    id             int |-1---
+    id          int pk |-1---
     name       varchar |    |
     addr       varchar |    |
 ------------------------    |
@@ -9,30 +9,26 @@ shops                  |
 ------------------------    |
 checks                 |    |
 ------------------------    |
-    id             int |-1-------
+    id          int pk |-1-------
     datetime  datetime |    |   |
-    shop_id        int |->---   |
+    shop_id         fk |->---   |
     total        float |        |
 ------------------------        |
                                 |
 ------------------------        |
 shop_list              |        |
 ------------------------        |
-    id             int |        |
-    check_id       int |->-------
-    good_1         int |-1---
-    good_2         int |-1--|
-    good_3         int |-1--|    
-    good_4         int |-1--|
-    good_5         int |-1--|
+    id          int pk |        |
+    check_id        fk |->-------
+    good_id         fk |-1---
 ------------------------    |
                             |
 ------------------------    |
 goods                  |    |
 ------------------------    |
-    id             int |->---
+    id          int pk |->---
     full_name  varchar |
-    short_name_id  int |->---
+    short_name_id   fk |->---
     price        float |    |
     quantity     float |    |
     cost         float |    |
@@ -41,6 +37,6 @@ goods                  |    |
 ------------------------    |
 short_names            |    |
 ------------------------    |
-    id             int |-1---
+    id          int pk |-1---
     name       varchar |
 ------------------------
