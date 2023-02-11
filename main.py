@@ -15,6 +15,7 @@ class Worker():
         in_file = self.ui.args.f
         if in_file:
             self.process_file(in_file)
+            self.show_ex_data()
 
     def process_file(self, in_file):
         if in_file:
@@ -29,7 +30,11 @@ class Worker():
                 else:
                     self.db.put_data(data)
 
-
+    def show_ex_data(self):
+        for i in self.db.get_ex_data():
+            for n in i:
+                self.ui.show_msg(n)
+                
 
 if __name__ == "__main__":
     w = Worker()
