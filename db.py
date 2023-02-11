@@ -74,11 +74,7 @@ class ShopList(Base):
     __tablename__ = "shopping_list"
     id = Column(Integer, primary_key=True, autoincrement=True)
     check_id = Column(ForeignKey("checks.id"), nullable=False)
-    good_1 = Column(ForeignKey("goods.id"), nullable=False)
-    good_2 = Column(ForeignKey("goods.id"))
-    good_3 = Column(ForeignKey("goods.id"))
-    good_4 = Column(ForeignKey("goods.id"))
-    good_5 = Column(ForeignKey("goods.id"))
+    good_id = Column(ForeignKey("goods.id"), nullable=False)
 
     def __repr__(self):
         return(f"Shoplist(id={self.id!r}, check_id={self.check_id!r})")
@@ -280,45 +276,25 @@ class DB():
                 if shop_list_ids:
                     db_goods = []
                     for i in shop_list_ids:
-                        db_goods.append(i.good_1)
-                        if i.good_2:
-                            db_goods.append(i.good_2)
-                        if i.good_3:
-                            db_goods.append(i.good_3)
-                        if i.good_4:
-                            db_goods.append(i.good_4)
-                        if i.good_5:    
-                            db_goods.append(i.good_5)
+                        db_goods.append(i.good_id)
                     if sorted(db_goods) == sorted(good_ids):
                         continue
-                count = len(good_ids) // GOODS_COUNT
-                if len(good_ids) % GOODS_COUNT != 0:
-                    count += 1
-                for i in range(count):
+                for i in good_ids:
                     session.add(
                         ShopList(
-                            check_id=check_id,
-                            good_1=good_ids[0],
-                            good_2=good_ids[1] if len(good_ids) >= 2 else None,
-                            good_3=good_ids[2] if len(good_ids) >= 3 else None,
-                            good_4=good_ids[3] if len(good_ids) >= 4 else None,
-                            good_5=good_ids[4] if len(good_ids) >= 5 else None,
+                            check_id=check_id, good_id=i,
                         )
                     )
-                    count -= 1
-                    if count:
-                        good_ids = good_ids[GOODS_COUNT:]
                 session.commit()        
-                
-            for i in session.scalars(select(Check)):
-                show_msg(i)
-            for i in session.scalars(select(ShortName)):
-                show_msg(i)
-            for i in session.scalars(select(Shop)):
-                show_msg(i)
-            for i in session.scalars(select(Good)):
-                show_msg(i)
-            for i in session.scalars(select(ShopList)):
-                show_msg(i)
 
+    def get_ex_data(self):
+        with Session(engine) as session:
+            data = (
+                [i for i in session.scalars(select(Check))],
+                [i for i in session.scalars(select(ShortName))],
+                [i for i in session.scalars(select(Shop))],
+                [i for i in session.scalars(select(Good))],
+                [i for i in session.scalars(select(ShopList))],
+            )
+        return(data)
 
