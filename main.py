@@ -10,13 +10,13 @@ import db
 class Worker():
     
     def __init__(self):
-        self.ui = UI()
         self.db = db.DB()
+        self.ui = UI(choices_dict=self.db.create_choices_dict())
         in_file = self.ui.args.file
         if in_file:
             self.process_file(in_file)
             #self.show_ex_data()
-
+        
     def process_file(self, in_file):
         if in_file:
             if not isfile(in_file):
