@@ -18,7 +18,6 @@ PRICE = 'price'
 QUANTITY = 'quantity'
 COST = 'cost'
 TOTAL = 'total'
-GOODS_COUNT = 5
 
 date_re = compile('^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$')
 url = URL.create("sqlite", database="db.sqlite")
@@ -82,8 +81,7 @@ class ShopList(Base):
 
 class DB():
 
-    def __init__(self):
-        
+    def __init__(self):        
         #Base.metadata.drop_all(engine)
         Base.metadata.create_all(engine)
     
@@ -296,5 +294,23 @@ class DB():
                 [i for i in session.scalars(select(Good))],
                 [i for i in session.scalars(select(ShopList))],
             )
+        return(data)
+        
+    def create_choices_dict(self):
+        with Session(engine) as session:
+            data = {
+                SHOP_NAME: [
+                        i[0] for i in session.query(Shop.name).distinct()
+                ],
+                SHOP_ADDR: [
+                        i[0] for i in session.query(Shop.addr).distinct()
+                ],
+                FULL_NAME: [
+                        i[0] for i in session.query(Good.full_name).distinct()
+                ],
+                SHORT_NAME: [
+                        i[0] for i in session.query(ShortName.name).distinct()
+                ],
+            }
         return(data)
 
