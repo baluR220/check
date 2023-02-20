@@ -45,11 +45,11 @@ class GUI():
         self.create_entry_pack(
             root, choices_dict
         )
-        subm = tk.Button(
+        new_check_b = tk.Button(
             root, text='Add check', 
             command=self.add_check
         )
-        subm.pack()
+        new_check_b.pack()
         root.mainloop()
 
     def show_msg(self, *args, **kwargs):
@@ -61,7 +61,7 @@ class GUI():
     def create_entry_pack(self, parent, choices_dict):
         self.sug_f = None
         pack_f = tk.Frame(parent)
-        pack_f.index = self.last_pack_index
+        pack_f.goods = []
         pack_f.pack()
         l = tk.Label(pack_f, text='Datetime')
         l.grid(column=0, row=0)
@@ -95,11 +95,23 @@ class GUI():
             )
         )
         shop_addr.grid(column=2, row=1)
-        pack_f.datetime = datetime
-        pack_f.shop_name_val = shop_name_val
-        pack_f.shop_name = shop_name
-        pack_f.shop_addr_val = shop_addr_val
-        pack_f.shop_addr = shop_addr
+        l = tk.Label(pack_f, text='Goods')
+        l.grid(column=0, row=2, pady=5)
+        pack_f.good_row = 3
+        self.create_good(pack_f, choices_dict)
+        new_good_b = tk.Button(
+            pack_f, text='Add good', 
+            command=lambda: self.add_good(pack_f, choices_dict),
+            name='new_good_b'
+        )
+        new_good_b.grid(column=2, row=pack_f.good_row+1)
+        l = tk.Label(pack_f, text='Total', name='total_l')
+        l.grid(column=0, row=pack_f.good_row)
+        total_val = tk.StringVar()
+        total = tk.Entry(
+            pack_f, textvariable=total_val, name='total_e'
+        )
+        total.grid(column=0, row=pack_f.good_row+1)
 
     def entry_change_hook(self, choices_list, entry, entry_val, *args):
         if not entry_val.get() or self.sug_f:
@@ -121,6 +133,75 @@ class GUI():
     def change_val(self, i, entry_val):
         entry_val.set(i)
         self.sug_f.destroy()
+
+    def create_good(self, pack_f, choices_dict):
+        good_f = tk.Frame(pack_f)
+        good_f.grid(column=0, columnspan=3, row=pack_f.good_row, pady=10)
+        pack_f.goods.append(good_f)
+        l = tk.Label(good_f, text='Full name')
+        l.grid(column=0, row=0)
+        full_name_val = tk.StringVar()
+        full_name = tk.Entry(
+            good_f, textvariable=full_name_val
+        )
+        full_name_val.trace_add(
+            "write",
+            lambda *args: self.entry_change_hook(
+                choices_dict['full_name'], full_name,
+                full_name_val, *args
+            )
+        )
+        full_name.grid(column=0, row=1)
+        l = tk.Label(good_f, text='Short name')
+        l.grid(column=1, row=0)
+        short_name_val = tk.StringVar()
+        short_name = tk.Entry(
+            good_f, textvariable=short_name_val
+        )
+        short_name_val.trace_add(
+            "write",
+            lambda *args: self.entry_change_hook(
+                choices_dict['short_name'], short_name,
+                short_name_val, *args
+            )
+        )
+        del_b = tk.Button(
+            good_f, text='Del good',
+            command=lambda: self.del_good(good_f)
+        )
+        del_b.grid(column=2, row=0)
+        short_name.grid(column=1, row=1)
+        l = tk.Label(good_f, text='Price')
+        l.grid(column=0, row=2)
+        price_val = tk.StringVar()
+        price = tk.Entry(
+            good_f, textvariable=price_val
+        )
+        price.grid(column=0, row=3)
+        l = tk.Label(good_f, text='Quantity')
+        l.grid(column=1, row=2)
+        quan_val = tk.StringVar()
+        quan = tk.Entry(
+            good_f, textvariable=quan_val
+        )
+        quan.grid(column=1, row=3)
+        l = tk.Label(good_f, text='Cost')
+        l.grid(column=2, row=2)
+        cost_val = tk.StringVar()
+        cost = tk.Entry(
+            good_f, textvariable=cost_val
+        )
+        cost.grid(column=2, row=3)
+        pack_f.good_row += 1
+
+    def add_good(self, pack_f, choices_dict):
+        self.create_good(pack_f, choices_dict)
+        pack_f.children['new_good_b'].grid(column=2, row=pack_f.good_row+1)
+        pack_f.children['total_l'].grid(column=0, row=pack_f.good_row)
+        pack_f.children['total_e'].grid(column=0, row=pack_f.good_row+1)
+
+    def del_good(self, good_f):
+        good_f.destroy()
 
     def add_check(self):
         pass
