@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from datetime import datetime
 import tkinter as tk
 
 
@@ -139,7 +140,7 @@ class GUI():
         )
         total.grid(column=0, row=pack_f.good_row+1)
         del_b = tk.Button(
-            pack_f, text='Del check',
+            pack_f, text='Del check', name='del_check_b',
             command=lambda: self.del_check(pack_f)
         )
         del_b.grid(column=1, row=pack_f.good_row+1)
@@ -152,7 +153,7 @@ class GUI():
         val = entry_val.get()
         if val:
             for i in sorted(choices_list):
-                if val in i:
+                if val.lower() in i.lower():
                     tk.Button(
                         self.sug_f, text=i[:20], width=17,
                         command=lambda x=i: self.change_val(x, entry_val)
@@ -236,6 +237,7 @@ class GUI():
         parent.children['new_good_b'].grid_configure(row=parent.good_row+1)
         parent.children['total_l'].grid_configure(row=parent.good_row)
         parent.children['total_e'].grid_configure(row=parent.good_row+1)
+        parent.children['del_check_b'].grid_configure(row=parent.good_row+1)
 
     def del_good(self, good_f):
         good_f.destroy()
@@ -266,17 +268,22 @@ class GUI():
                         goods.append({
                             'full_name': pack[n].children['full_name'].get(),
                             'short_name': pack[n].children['short_name'].get(),
-                            'price': pack[n].children['price'].get(),
-                            'quantity': pack[n].children['quantity'].get(),
-                            'cost': pack[n].children['cost'].get(),
+                            'price': float(pack[n].children['price'].get(
+                            ).replace(',', '.')),
+                            'quantity': float(pack[n].children['quantity'].get(
+                            ).replace(',', '.')),
+                            'cost': float(pack[n].children['cost'].get(
+                            ).replace(',', '.')),
                         })
                 pack = form_f.children[i]
                 data.append({
-                    'datetime': pack.children['datetime'].get(),
+                    'datetime': datetime.strptime(
+                        pack.children['datetime'].get(),'%Y-%m-%d %H:%M:%S'),
                     'shop_name': pack.children['shop_name'].get(),
                     'shop_addr': pack.children['shop_addr'].get(),
                     'goods': goods,
-                    'total': pack.children['total_e'].get(),
+                    'total': float(pack.children['total_e'].get(
+                    ).replace(',', '.')),
                 })
         self.ui.submit_data(data)
 
