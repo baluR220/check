@@ -11,7 +11,7 @@ class Worker():
     
     def __init__(self):
         self.db = db.DB()
-        self.ui = UI(choices_dict=self.db.create_choices_dict())
+        UI(worker=self, choices_dict=self.db.create_choices_dict())
         in_file = self.ui.args.file
         if in_file:
             self.process_file(in_file)
@@ -25,15 +25,17 @@ class Worker():
                 self.ui.show_msg(f'validating {in_file}')
                 with open(in_file) as in_f:
                     data = safe_load(in_f)
-                    err_msg, data = self.db.check_all(data)
-                if err_msg:
-                    self.ui.show_msg(err_msg)
-                else:
-                    self.ui.show_msg(f'{in_file} is valid')
-                    if not self.ui.args.validate:
-                        self.ui.show_msg(f'processing {in_file}')
-                        self.db.put_data(data)
-                        self.ui.show_msg(f'{in_file} processed')
+                self.process_data(data, in_file)
+    def process_data(self, data, in_file='form'):
+        err_msg, data = self.db.check_all(data)
+        if err_msg:
+            self.ui.show_msg(err_msg)
+        else:
+            self.ui.show_msg(f'{in_file} is valid')
+            if not self.ui.args.validate:
+                self.ui.show_msg(f'processing {in_file}')
+                self.db.put_data(data)
+                self.ui.show_msg(f'{in_file} processed')
 '''
     def show_ex_data(self):
         for i in self.db.get_ex_data():
