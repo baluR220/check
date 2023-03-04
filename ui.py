@@ -42,19 +42,20 @@ class GUI():
         self.ui = ui
         self.ui.front = self
         root = tk.Tk()
-        self.root = root
-        root.geometry("800x700",)
+        root.minsize(600, 400)
         root.bind('<Button-1>', self.set_focus)
-        root.resizable(False, False)
-        form_o = tk.Frame(root)
+        #root.resizable(False, False)
+        form_o = tk.Frame(root, name='form_o')
         form_o.pack()
-        form_c = tk.Canvas(form_o, width=520, height=650)
-        form_f = tk.Frame(form_c)
+        root.update()
+        form_c = tk.Canvas(
+            form_o, width=root.winfo_width()-80,
+            height=root.winfo_height()-50, name='form_c'
+        )
+        form_f = tk.Frame(form_c, name='form_f')
         form_s = tk.Scrollbar(form_o, orient="vertical", command=form_c.yview)
         form_c.configure(yscrollcommand=form_s.set)
-        sug_f = tk.Frame(form_o, width=80)
-        sug_f.pack(side="left")
-        self.sug_f = sug_f
+        self.sug_f = None
         form_s.pack(side="right", fill="y")
         form_c.pack(side="left", fill="both", expand=True)
         form_c.create_window((4,4), window=form_f, anchor="nw")
@@ -62,6 +63,10 @@ class GUI():
         form_f.bind(
             "<Configure>", 
             lambda event, canvas=form_c: self.form_f_conf(canvas)
+        )
+        root.bind(
+            "<Configure>", 
+            lambda event, canvas=form_c, root=root: self.root_conf(canvas, root)
         )
         form_f.pack_row = 0
         self.create_entry_pack(
@@ -147,9 +152,18 @@ class GUI():
 
     def entry_change_hook(self, choices_list, entry, entry_val, *args):
         if not entry_val.get() or self.sug_f:
-            for i in self.sug_f.winfo_children():
-                i.destroy()
+            self.sug_f.destroy()
         val = entry_val.get()
+        (x, y) = (entry.winfo_x(), entry.winfo_y()+entry.winfo_height())
+        w = entry
+        while True:
+            x += w.master.winfo_x()
+            y += w.master.winfo_y()
+            w = w.master
+            if w.master.winfo_name() == 'form_o':
+                break
+        self.sug_f = tk.Frame(w.master)
+        self.sug_f.place(x=x, y=y)
         if val:
             for i in sorted(choices_list):
                 if val.lower() in i.lower():
@@ -160,8 +174,7 @@ class GUI():
 
     def change_val(self, i, entry_val):
         entry_val.set(i)
-        for i in self.sug_f.winfo_children():
-            i.destroy()
+        self.sug_f.destroy()
 
     def create_good(self, pack_f, choices_dict):
         good_f = tk.Frame(pack_f, name='good_'+str(pack_f.good_row-3))
@@ -290,6 +303,9 @@ class GUI():
 
     def form_f_conf(self, canvas):
         canvas.configure(scrollregion=canvas.bbox("all"))
+        
+    def root_conf(self, canvas, root):
+        canvas.configure(height=root.winfo_height()-50)
 
     def floatify(self, string):
         try:
