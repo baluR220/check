@@ -152,9 +152,9 @@ class GUI():
         val = entry_val.get()
         if val:
             for i in sorted(choices_list):
-                if val in i:
+                if val.lower() in i.lower():
                     tk.Button(
-                        self.sug_f, text=i[:20], width=17,
+                        self.sug_f, text=i, width=17, wraplength=150,
                         command=lambda x=i: self.change_val(x, entry_val)
                     ).pack()
 
