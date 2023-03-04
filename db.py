@@ -1,4 +1,4 @@
-from re import compile
+from datetime import datetime
 
 from sqlalchemy.engine import URL
 from sqlalchemy import (
@@ -19,7 +19,6 @@ QUANTITY = 'quantity'
 COST = 'cost'
 TOTAL = 'total'
 
-date_re = compile('^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$')
 url = URL.create("sqlite", database="db.sqlite")
 engine = create_engine(url)
 Base = declarative_base()
@@ -86,6 +85,19 @@ class DB():
         Base.metadata.create_all(engine)
     
     def check_goods(self, goods, date, count):
+        '''
+        goods = [
+            {
+                'full_name': string,
+                'short_name': string,
+                'price': int or float,
+                'quantity': int or float,
+                'cost': int or float
+            },
+            {...},
+            ...
+        ]
+        '''
         err_msg = ''
         for i in goods:
             try:
@@ -133,15 +145,40 @@ class DB():
 
 
     def check_all(self, data):
+        '''
+        data = [
+            {
+                'datetime': datetime obj,
+                'shop_name': string,
+                'shop_addr': string,
+                'goods': [
+                            {
+                                'full_name': string,
+                                 'short_name': string,
+                                 'price': int or float,
+                                 'quantity': int or float,
+                                 'cost': int or float
+                             },
+                             {...},
+                             ...
+                         ]
+                'total': int or float
+            },
+            {...},
+            ...
+        ]
+        '''
         err_msg = ''
         count = 1
         for i in data:
             try:
                 date = i[DATETIME]
-                if not date_re.match(str(date)):
-                    err_msg = f'{date} is not matching pattern: \
-                        YYYY-MM-DD HH:MM:SS'
-                    break
+                try:
+                    i[DATETIME] = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    err_msg = f'"{date}" is not matching pattern: '\
+                        f'YYYY-MM-DD HH:MM:SS'
+                    break                    
                 shop_name = i[SHOP_NAME]
                 if not shop_name:
                     err_msg = f'Empty {SHOP_NAME} under date {date}'
