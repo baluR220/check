@@ -44,7 +44,21 @@ class GUI():
         root = tk.Tk()
         root.minsize(600, 400)
         root.bind('<Button-1>', self.set_focus)
-        #root.resizable(False, False)
+        self.create_form(root, choices_dict)
+        subm_b = tk.Button(
+            root, text='Submit', 
+            command=lambda: self.subm_form(form_f)
+        )
+        subm_b.pack()
+        root.mainloop()
+
+    def show_msg(self, *args, **kwargs):
+        print(*args, **kwargs)
+
+    def set_focus(self, event):
+        event.widget.focus_set()
+        
+    def create_form(self, root, choices_dict):
         form_o = tk.Frame(root, name='form_o')
         form_o.pack()
         root.update()
@@ -77,18 +91,6 @@ class GUI():
             command=lambda: self.add_check(form_f, choices_dict)
         )
         new_check_b.grid(column=0, row=form_f.pack_row+1)
-        subm_b = tk.Button(
-            root, text='Submit', 
-            command=lambda: self.subm_form(form_f)
-        )
-        subm_b.pack()
-        root.mainloop()
-
-    def show_msg(self, *args, **kwargs):
-        print(*args, **kwargs)
-
-    def set_focus(self, event):
-        event.widget.focus_set()
 
     def create_entry_pack(self, parent, choices_dict):
         pack_f = tk.Frame(parent, name='pack_'+str(parent.pack_row))
