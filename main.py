@@ -22,11 +22,15 @@ class Worker():
             if not isfile(in_file):
                self.ui.show_msg(f'{in_file} not found or not a file')
             else:
-                self.ui.show_msg(f'validating {in_file}')
                 with open(in_file) as in_f:
                     data = safe_load(in_f)
                 self.process_data(data, in_file)
-    def process_data(self, data, in_file='form'):
+                
+    def process_form(self, data):
+        self.process_data(data, 'form')
+            
+    def process_data(self, data, in_file):
+        self.ui.show_msg(f'validating {in_file}')
         err_msg, data = self.db.check_all(data)
         if err_msg:
             self.ui.show_msg(err_msg)
