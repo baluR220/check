@@ -239,14 +239,7 @@ class GUI():
         pack_f.good_row += 1
 
     def add_good(self, parent, choices_dict):
-        for i in parent.children.keys():
-            if i.startswith('good'):
-                full_c = parent.children[i].children['full_name'].get()
-                if full_c and full_c not in choices_dict['full_name']:
-                    choices_dict['full_name'].append(full_c)
-                short_c = parent.children[i].children['short_name'].get()
-                if short_c and short_c not in choices_dict['short_name']:
-                    choices_dict['short_name'].append(short_c)
+        self.update_choices_good(parent, choices_dict)
         self.create_good(parent, choices_dict)
         parent.children['new_good_b'].grid_configure(row=parent.good_row+1)
         parent.children['total_l'].grid_configure(row=parent.good_row)
@@ -258,15 +251,31 @@ class GUI():
     def add_check(self, parent, choices_dict):
         for i in parent.children.keys():
             if i.startswith('pack'):
-                name_c = parent.children[i].children['shop_name'].get()
-                if name_c and name_c not in choices_dict['shop_name']:
-                    choices_dict['shop_name'].append(name_c)
-                addr_c = parent.children[i].children['shop_addr'].get()
-                if addr_c and addr_c not in choices_dict['shop_addr']:
-                    choices_dict['shop_addr'].append(addr_c)
+                self.update_choices(
+                    parent.children[i], choices_dict, 'shop_name'
+                )
+                self.update_choices(
+                    parent.children[i], choices_dict, 'shop_addr'
+                )
+                self.update_choices_good(parent.children[i], choices_dict)
         self.create_entry_pack(parent, choices_dict)
         parent.children['new_check_b'].grid_configure(row=parent.pack_row+1)
         
+    def update_choices(self, parent, choices_dict, entry):
+        val = parent.children[entry].get()
+        if val and val not in choices_dict[entry]:
+            choices_dict[entry].append(val)
+
+    def update_choices_good(self, parent, choices_dict):
+        for i in parent.children.keys():
+            if i.startswith('good'):
+                self.update_choices(
+                    parent.children[i], choices_dict, 'full_name'
+                )
+                self.update_choices(
+                    parent.children[i], choices_dict, 'short_name'
+                )
+
     def del_check(self, pack_f):
         pack_f.destroy()
 
