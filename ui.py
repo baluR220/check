@@ -45,11 +45,6 @@ class GUI():
         root.minsize(600, 400)
         root.bind('<Button-1>', self.set_focus)
         self.create_form(root, choices_dict)
-        subm_b = tk.Button(
-            root, text='Submit', 
-            command=lambda: self.subm_form(form_f)
-        )
-        subm_b.pack()
         root.mainloop()
 
     def show_msg(self, *args, **kwargs):
@@ -72,8 +67,7 @@ class GUI():
         self.sug_f = None
         form_s.pack(side="right", fill="y")
         form_c.pack(side="left", fill="both", expand=True)
-        form_c.create_window((4,4), window=form_f, anchor="nw")
-
+        form_c.create_window((0,0), window=form_f, anchor="nw")
         form_f.bind(
             "<Configure>", 
             lambda event, canvas=form_c: self.form_f_conf(canvas)
@@ -91,6 +85,11 @@ class GUI():
             command=lambda: self.add_check(form_f, choices_dict)
         )
         new_check_b.grid(column=0, row=form_f.pack_row+1)
+        subm_b = tk.Button(
+            root, text='Submit', 
+            command=lambda: self.subm_form(form_f)
+        )
+        subm_b.pack()
 
     def create_entry_pack(self, parent, choices_dict):
         pack_f = tk.Frame(parent, name='pack_'+str(parent.pack_row))
@@ -159,12 +158,12 @@ class GUI():
         (x, y) = (entry.winfo_x(), entry.winfo_y()+entry.winfo_height())
         w = entry
         while True:
-            x += w.master.winfo_x()
-            y += w.master.winfo_y()
             w = w.master
+            x += w.winfo_x()
+            y += w.winfo_y() if w.winfo_y() > 0 else 0
             if w.master.winfo_name() == 'form_o':
                 break
-        self.sug_f = tk.Frame(w.master)
+        self.sug_f = tk.Frame(w.children['form_f'])
         self.sug_f.place(x=x, y=y)
         if val:
             for i in sorted(choices_list):
