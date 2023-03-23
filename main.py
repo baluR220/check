@@ -1,5 +1,6 @@
 from traceback import format_exception_only as f_exc
 from os.path import isfile
+from threading import Thread
 
 from yaml import safe_load
 
@@ -27,7 +28,7 @@ class Worker():
                 self.process_data(data, in_file)
                 
     def process_form(self, data):
-        self.process_data(data, 'form')
+        Thread(target=self.process_data, args=(data, 'form')).start()
             
     def process_data(self, data, in_file):
         self.ui.show_msg(f'validating {in_file}')
