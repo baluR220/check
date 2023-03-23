@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 import tkinter as tk
+from tkinter import ttk
 
 
 class UI():
@@ -44,6 +45,7 @@ class GUI():
         root = tk.Tk()
         root.minsize(600, 400)
         root.bind('<Button-1>', self.set_focus)
+        ttk.Style().configure('TButton', wraplength=150,)
         self.create_form(root, choices_dict)
         root.mainloop()
 
@@ -54,52 +56,53 @@ class GUI():
         event.widget.focus_set()
         
     def create_form(self, root, choices_dict):
-        form_o = tk.Frame(root, name='form_o')
+        form_a = ttk.Frame(root)
+        form_a.pack()
+        form_o = ttk.Frame(form_a, name='form_o')
         form_o.pack()
         root.update()
-        form_c = tk.Canvas(
-            form_o, width=root.winfo_width()-80,
-            height=root.winfo_height()-50, name='form_c'
-        )
-        form_f = tk.Frame(form_c, name='form_f')
-        form_s = tk.Scrollbar(form_o, orient="vertical", command=form_c.yview)
+        form_c = tk.Canvas(form_o, name='form_c')
+        form_f = ttk.Frame(form_c, name='form_f')
+        form_s = ttk.Scrollbar(form_o, orient="vertical", command=form_c.yview)
         form_c.configure(yscrollcommand=form_s.set)
         self.sug_f = None
         form_s.pack(side="right", fill="y")
         form_c.pack(side="left", fill="both", expand=True)
-        form_c.create_window((0,0), window=form_f, anchor="nw")
+        form_c.form_f_id = form_c.create_window(
+            (0,0), window=form_f, anchor="nw"
+        )
         form_f.bind(
             "<Configure>", 
             lambda event, canvas=form_c: self.form_f_conf(canvas)
         )
         root.bind(
-            "<Configure>", 
+            "<Configure>",
             lambda event, canvas=form_c, root=root: self.root_conf(canvas, root)
         )
         form_f.pack_row = 0
         self.create_entry_pack(
             form_f, choices_dict
         )
-        new_check_b = tk.Button(
+        new_check_b = ttk.Button(
             form_f, text='Add check', name='new_check_b',
             command=lambda: self.add_check(form_f, choices_dict)
         )
         new_check_b.grid(column=0, row=form_f.pack_row+1)
-        subm_b = tk.Button(
-            root, text='Submit', 
+        subm_b = ttk.Button(
+            form_a, text='Submit', 
             command=lambda: self.subm_form(form_f)
         )
         subm_b.pack()
 
     def create_entry_pack(self, parent, choices_dict):
-        pack_f = tk.Frame(parent, name='pack_'+str(parent.pack_row))
+        pack_f = ttk.Frame(parent, name='pack_'+str(parent.pack_row))
         pack_f.goods = []
         pack_f.grid(column=0, columnspan=2, row=parent.pack_row, pady=10)
-        l = tk.Label(pack_f, text='Datetime')
+        l = ttk.Label(pack_f, text='Datetime')
         l.grid(column=0, row=0)
         datetime = tk.Entry(pack_f, name='datetime')
         datetime.grid(column=0, row=1)
-        l = tk.Label(pack_f, text='Shop name')
+        l = ttk.Label(pack_f, text='Shop name')
         l.grid(column=1, row=0)
         shop_name_val = tk.StringVar()
         shop_name = tk.Entry(
@@ -113,7 +116,7 @@ class GUI():
             )
         )
         shop_name.grid(column=1, row=1)
-        l = tk.Label(pack_f, text='Shop address')
+        l = ttk.Label(pack_f, text='Shop address')
         l.grid(column=2, row=0)
         shop_addr_val = tk.StringVar()
         shop_addr = tk.Entry(
@@ -127,25 +130,25 @@ class GUI():
             )
         )
         shop_addr.grid(column=2, row=1)
-        l = tk.Label(pack_f, text='Goods')
+        l = ttk.Label(pack_f, text='Goods')
         l.grid(column=0, row=2)
         pack_f.good_row = 3
         self.create_good(pack_f, choices_dict)
-        new_good_b = tk.Button(
+        new_good_b = ttk.Button(
             pack_f, text='Add good', 
             command=lambda: self.add_good(pack_f, choices_dict),
             name='new_good_b'
         )
         new_good_b.grid(column=2, row=pack_f.good_row+1)
-        l = tk.Label(pack_f, text='Total', name='total_l')
+        l = ttk.Label(pack_f, text='Total', name='total_l')
         l.grid(column=0, row=pack_f.good_row)
         total_val = tk.StringVar()
         total = tk.Entry(
             pack_f, textvariable=total_val, name='total_e'
         )
         total.grid(column=0, row=pack_f.good_row+1)
-        del_b = tk.Button(
-            pack_f, text='Del check',
+        del_b = ttk.Button(
+            pack_f, text='Del check', name='del_check_b',
             command=lambda: self.del_check(pack_f)
         )
         del_b.grid(column=1, row=pack_f.good_row+1)
@@ -163,13 +166,13 @@ class GUI():
             y += w.winfo_y() if w.winfo_y() > 0 else 0
             if w.master.winfo_name() == 'form_o':
                 break
-        self.sug_f = tk.Frame(w.children['form_f'])
+        self.sug_f = ttk.Frame(w.children['form_f'])
         self.sug_f.place(x=x, y=y)
         if val:
             for i in sorted(choices_list):
                 if val.lower() in i.lower():
-                    tk.Button(
-                        self.sug_f, text=i, width=17, wraplength=150,
+                    ttk.Button(
+                        self.sug_f, text=i, width=17,
                         command=lambda x=i: self.change_val(x, entry_val)
                     ).pack()
 
@@ -178,10 +181,10 @@ class GUI():
         self.sug_f.destroy()
 
     def create_good(self, pack_f, choices_dict):
-        good_f = tk.Frame(pack_f, name='good_'+str(pack_f.good_row-3))
+        good_f = ttk.Frame(pack_f, name='good_'+str(pack_f.good_row-3))
         good_f.grid(column=0, columnspan=3, row=pack_f.good_row, pady=10)
         pack_f.goods.append(good_f)
-        l = tk.Label(good_f, text='Full name')
+        l = ttk.Label(good_f, text='Full name')
         l.grid(column=0, row=0)
         full_name_val = tk.StringVar()
         full_name = tk.Entry(
@@ -195,7 +198,7 @@ class GUI():
             )
         )
         full_name.grid(column=0, row=1)
-        l = tk.Label(good_f, text='Short name')
+        l = ttk.Label(good_f, text='Short name')
         l.grid(column=1, row=0)
         short_name_val = tk.StringVar()
         short_name = tk.Entry(
@@ -208,27 +211,27 @@ class GUI():
                 short_name_val, *args
             )
         )
-        del_b = tk.Button(
+        del_b = ttk.Button(
             good_f, text='Del good',
             command=lambda: self.del_good(good_f)
         )
         del_b.grid(column=2, row=0)
         short_name.grid(column=1, row=1)
-        l = tk.Label(good_f, text='Price')
+        l = ttk.Label(good_f, text='Price')
         l.grid(column=0, row=2)
         price_val = tk.StringVar()
         price = tk.Entry(
             good_f, textvariable=price_val, name='price',
         )
         price.grid(column=0, row=3)
-        l = tk.Label(good_f, text='Quantity')
+        l = ttk.Label(good_f, text='Quantity')
         l.grid(column=1, row=2)
         quan_val = tk.StringVar()
         quan = tk.Entry(
             good_f, textvariable=quan_val, name='quantity',
         )
         quan.grid(column=1, row=3)
-        l = tk.Label(good_f, text='Cost')
+        l = ttk.Label(good_f, text='Cost')
         l.grid(column=2, row=2)
         cost_val = tk.StringVar()
         cost = tk.Entry(
@@ -243,6 +246,7 @@ class GUI():
         parent.children['new_good_b'].grid_configure(row=parent.good_row+1)
         parent.children['total_l'].grid_configure(row=parent.good_row)
         parent.children['total_e'].grid_configure(row=parent.good_row+1)
+        parent.children['del_check_b'].grid_configure(row=parent.good_row+1)
 
     def del_good(self, good_f):
         good_f.destroy()
@@ -315,7 +319,22 @@ class GUI():
         canvas.configure(scrollregion=canvas.bbox("all"))
         
     def root_conf(self, canvas, root):
-        canvas.configure(height=root.winfo_height()-50)
+        canvas.configure(
+            height=root.winfo_height()-50, width=root.winfo_width()-80
+        )
+        '''
+        canvas.itemconfigure(canvas.form_f_id, width=canvas.winfo_width())
+        if (canvas.winfo_height() - int(canvas.itemcget(canvas.form_f_id, 'height'))) > 0:
+            canvas.itemconfigure(canvas.form_f_id, height=canvas.winfo_height())
+            print(1)
+        else:
+            canvas.itemconfigure(
+                canvas.form_f_id,
+                height=canvas.children['form_f'].winfo_height()
+            )
+            print(canvas.children['form_f'].winfo_height())
+        canvas.configure(scrollregion=canvas.bbox("all"))
+        '''
 
     def floatify(self, string):
         try:
